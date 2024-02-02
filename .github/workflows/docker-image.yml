@@ -37,6 +37,6 @@ jobs:
           # Use Docker `latest` tag convention
           [ "$VERSION" == "main" ] && VERSION=latest
           echo VERSION=$VERSION
-          docker build . --file images/Dockerfile --tag $IMAGE_NAME:$VERSION
+          docker build . --file Dockerfile --tag $IMAGE_NAME:$VERSION
           docker push $IMAGE_NAME:$VERSION
 
