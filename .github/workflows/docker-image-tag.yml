@@ -1,35 +1,35 @@
-#name: Docker Image CI
-#
-#on:
-#  push:
-#    branches: ["main"]
-#env:
-#  # 设置 docker 镜像名
-#  IMAGE_NAME: ghcr.io/ittoyxk/freeswitch
-#jobs:
-#
-#  push-store-image:
-#
-#    runs-on: ubuntu-latest
-#    permissions:
-#      contents: read
-#      packages: write
-#
-#    steps:
-#      - name: 'Checkout GitHub Action'
-#        uses: actions/checkout@v3
-#
-#      - name: 'Login to GitHub Container Registry'
-#        uses: docker/login-action@v1
-#        with:
-#          registry: ghcr.io
-#          username: ${{github.actor}}
-#          password: ${{secrets.GITHUB_TOKEN}}
-#
-#
-#      - name: Build and push image
-#        run:
-#          |
-#          docker pull ghcr.io/ittoyxk/freeswitch:latest
-#          docker tag ghcr.io/ittoyxk/freeswitch:latest ghcr.io/ittoyxk/freeswitch:v1.10.11.1
-#          docker push ghcr.io/ittoyxk/freeswitch:v1.10.11.1
+name: Docker Image CI
+
+on:
+  push:
+    branches: ["main"]
+env:
+  # 设置 docker 镜像名
+  IMAGE_NAME: ghcr.io/ittoyxk/freeswitch
+jobs:
+
+  push-store-image:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@v3
+
+      - name: 'Login to GitHub Container Registry'
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{github.actor}}
+          password: ${{secrets.GITHUB_TOKEN}}
+
+
+      - name: Build and push image
+        run:
+          |
+          docker pull ghcr.io/ittoyxk/freeswitch:v1.10.11
+          docker tag ghcr.io/ittoyxk/freeswitch:v1.10.11 ghcr.io/ittoyxk/freeswitch:v1.10.11.2
+          docker push ghcr.io/ittoyxk/freeswitch:v1.10.11.2
