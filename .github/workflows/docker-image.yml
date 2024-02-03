@@ -48,5 +48,3 @@ jobs:
           echo VERSION=$VERSION
           docker build . --file Dockerfile --tag $IMAGE_NAME:$VERSION
           docker push $IMAGE_NAME:$VERSION
-          docker tag $IMAGE_NAME:$VERSION registry.cn-beijing.aliyuncs.com/ittoyxk/freeswitch:$VERSION
-          docker push registry.cn-beijing.aliyuncs.com/ittoyxk/freeswitch:$VERSION
