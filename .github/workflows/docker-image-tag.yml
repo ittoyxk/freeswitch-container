@@ -2,8 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-#    branches: ["main"]
-    tags: "*"
+    branches: ["main"]
 env:
   # 设置 docker 镜像名
   IMAGE_NAME: ghcr.io/ittoyxk/freeswitch
@@ -31,12 +30,6 @@ jobs:
       - name: Build and push image
         run:
           |
-          # 从 GitHub.ref 中取出版本
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          # 从 tag 名字中替换 v 字符
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION)
-          # Use Docker `latest` tag convention
-          [ "$VERSION" == "main" ] && VERSION=latest
-          echo VERSION=$VERSION
-          docker build . --file Dockerfile --tag $IMAGE_NAME:$VERSION
-          docker push $IMAGE_NAME:$VERSION
+          docker pull ghcr.io/ittoyxk/freeswitch:v1.10.11
+          docker tag ghcr.io/ittoyxk/freeswitch:v1.10.11 ghcr.io/ittoyxk/freeswitch:latest
+          docker push ghcr.io/ittoyxk/freeswitch:latest
