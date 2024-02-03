@@ -54,6 +54,9 @@ RUN sed -i 's|#formats/mod_shout|formats/mod_shout|' /usr/src/freeswitch/build/m
     sed -i 's|#applications/mod_mp4v2|applications/mod_mp4v2|' /usr/src/freeswitch/build/modules.conf.in && \
     sed -i 's|#endpoints/mod_rtmp|endpoints/mod_rtmp|' /usr/src/freeswitch/build/modules.conf.in && \
     sed -i 's|#formats/mod_imagick|formats/mod_imagick|' /usr/src/freeswitch/build/modules.conf.in && \
+    sed -i 's|#xml_int/mod_xml_curl|xml_int/mod_xml_curl|' /usr/src/freeswitch/build/modules.conf.in && \
+    sed -i 's|#event_handlers/mod_format_cdr|event_handlers/mod_format_cdr|' /usr/src/freeswitch/build/modules.conf.in && \
+    sed -i 's|#event_handlers/mod_json_cdr|event_handlers/mod_json_cdr|' /usr/src/freeswitch/build/modules.conf.in
 
 RUN cd /usr/src/freeswitch && ./bootstrap.sh -j
 RUN cd /usr/src/freeswitch && ./configure
