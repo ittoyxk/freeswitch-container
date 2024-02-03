@@ -57,4 +57,6 @@ COPY docker-entrypoint.sh healthcheck.sh /
 HEALTHCHECK --interval=15s --timeout=5s \
     CMD  /healthcheck.sh
 
+RUN chmod +x /healthcheck.sh && chmod +x /docker-entrypoint.sh
+
 ENTRYPOINT ["/docker-entrypoint.sh"]
