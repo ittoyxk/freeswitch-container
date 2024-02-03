@@ -2,7 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: ["main"]
+#    branches: ["main"]
 env:
   # 设置 docker 镜像名
   IMAGE_NAME: ghcr.io/ittoyxk/freeswitch
