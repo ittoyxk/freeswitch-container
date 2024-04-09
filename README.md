@@ -118,9 +118,9 @@ docker run -d --name freeswitch --ulimit core=-1 --network host --restart always
 version: "3"
 
 services:
-  xhs-switch:
+  xk-switch:
     container_name: freeswitch
-    hostname: "xhs-node-1"
+    hostname: "xk-node-1"
     image: ghcr.io/ittoyxk/freeswitch:v1.10.11
     environment:
       - TZ=Asia/Shanghai
