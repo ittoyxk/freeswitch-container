@@ -34,7 +34,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -yq install \
 # mod_sndfile
     libsndfile1-dev libflac-dev libogg-dev libvorbis-dev \
 # mod_shout
-    libshout3-dev libmpg123-dev libmp3lame-dev
+    libshout3-dev libmpg123-dev libmp3lame-dev libvlc-dev
 
 RUN cd /usr/src/libs/libks && cmake . -DCMAKE_INSTALL_PREFIX=/usr -DWITH_LIBBACKTRACE=1 && make install
 RUN cd /usr/src/libs/sofia-sip && ./bootstrap.sh && ./configure CFLAGS="-g -ggdb" --with-pic --with-glib=no --without-doxygen --disable-stun --prefix=/usr && make -j`nproc --all` && make install
