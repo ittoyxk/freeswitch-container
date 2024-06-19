@@ -8,7 +8,7 @@ RUN git clone https://github.com/signalwire/libks /usr/src/libs/libks
 RUN git clone https://github.com/freeswitch/sofia-sip /usr/src/libs/sofia-sip
 RUN git clone https://github.com/freeswitch/spandsp /usr/src/libs/spandsp
 RUN git clone https://github.com/signalwire/signalwire-c /usr/src/libs/signalwire-c
-RUN git clone https://freeswitch.org/stash/scm/sd/libpng /usr/src/libs/libpng
+#RUN git clone https://freeswitch.org/stash/scm/sd/libpng.git /usr/src/libs/libpng
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get -yq install \
 # build
@@ -40,7 +40,7 @@ RUN cd /usr/src/libs/libks && cmake . -DCMAKE_INSTALL_PREFIX=/usr -DWITH_LIBBACK
 RUN cd /usr/src/libs/sofia-sip && ./bootstrap.sh && ./configure CFLAGS="-g -ggdb" --with-pic --with-glib=no --without-doxygen --disable-stun --prefix=/usr && make -j`nproc --all` && make install
 RUN cd /usr/src/libs/spandsp && git checkout 0d2e6ac && ./bootstrap.sh && ./configure CFLAGS="-g -ggdb" --with-pic --prefix=/usr && make -j`nproc --all` && make install
 RUN cd /usr/src/libs/signalwire-c && PKG_CONFIG_PATH=/usr/lib/pkgconfig cmake . -DCMAKE_INSTALL_PREFIX=/usr && make install
-RUN cd /usr/src/libs/libpng && ./configure && make && make install
+#RUN cd /usr/src/libs/libpng && ./configure && make && make install
 
 # Enable modules
 RUN sed -i 's|#formats/mod_shout|formats/mod_shout|' /usr/src/freeswitch/build/modules.conf.in && \
