@@ -31,5 +31,6 @@ jobs:
         run:
           |
           docker pull ghcr.io/ittoyxk/freeswitch:latest
-          docker tag ghcr.io/ittoyxk/freeswitch:latest ghcr.io/ittoyxk/freeswitch:v1.10.11.3
-          docker push ghcr.io/ittoyxk/freeswitch:v1.10.11.3
+          docker tag ghcr.io/ittoyxk/freeswitch:latest registry.cn-beijing.aliyuncs.com/ittoyxk/freeswitch:latest
+          docker login --username=hxk_xiaokang@163.com -password=XiaoKang000 registry.cn-beijing.aliyuncs.com
+          docker push registry.cn-beijing.aliyuncs.com/ittoyxk/freeswitch:latest
