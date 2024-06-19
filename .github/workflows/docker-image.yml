@@ -2,7 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: ["main"]
+#    branches: ["main"]
     tags: "*"
 env:
   # 设置 docker 镜像名
@@ -40,3 +40,6 @@ jobs:
           echo VERSION=$VERSION
           docker build . --file Dockerfile --tag $IMAGE_NAME:$VERSION
           docker push $IMAGE_NAME:$VERSION
+          docker tag $IMAGE_NAME:$VERSION registry.cn-beijing.aliyuncs.com/ittoyxk/freeswitch:$VERSION
+          docker login --username=${{secrets.ALIYUN_USERNAME}} --password=${{secrets.ALIYUN_PASSWORD}} registry.cn-beijing.aliyuncs.com
+          docker push registry.cn-beijing.aliyuncs.com/ittoyxk/freeswitch:$VERSION
