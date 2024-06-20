@@ -34,7 +34,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -yq install \
 # mod_sndfile
     libsndfile1-dev libflac-dev libogg-dev libvorbis-dev \
 # mod_shout
-    libshout3-dev libmpg123-dev libmp3lame-dev libvlc-dev libpng-dev
+    libshout3-dev libmpg123-dev libmp3lame-dev libpng-dev
 
 RUN cd /usr/src/libs/libks && cmake . -DCMAKE_INSTALL_PREFIX=/usr -DWITH_LIBBACKTRACE=1 && make install
 RUN cd /usr/src/libs/sofia-sip && ./bootstrap.sh && ./configure CFLAGS="-g -ggdb" --with-pic --with-glib=no --without-doxygen --disable-stun --prefix=/usr && make -j`nproc --all` && make install
@@ -53,8 +53,7 @@ RUN sed -i 's|#formats/mod_shout|formats/mod_shout|' /usr/src/freeswitch/build/m
     sed -i 's|#endpoints/mod_rtmp|endpoints/mod_rtmp|' /usr/src/freeswitch/build/modules.conf.in && \
     sed -i 's|#xml_int/mod_xml_curl|xml_int/mod_xml_curl|' /usr/src/freeswitch/build/modules.conf.in && \
     sed -i 's|#event_handlers/mod_format_cdr|event_handlers/mod_format_cdr|' /usr/src/freeswitch/build/modules.conf.in && \
-    sed -i 's|#event_handlers/mod_json_cdr|event_handlers/mod_json_cdr|' /usr/src/freeswitch/build/modules.conf.in && \
-    sed -i 's|#formats/mod_vlc|formats/mod_vlc|' /usr/src/freeswitch/build/modules.conf.in
+    sed -i 's|#event_handlers/mod_json_cdr|event_handlers/mod_json_cdr|' /usr/src/freeswitch/build/modules.conf.in
 
 RUN PKG_CONFIG_PATH=/usr/lib/pkgconfig
 RUN cd /usr/src/freeswitch && ./bootstrap.sh -j
