@@ -141,3 +141,7 @@ services:
       - ./conf/:/usr/local/freeswitch/conf/
       - ./log/:/usr/local/freeswitch/log/
 ```
+
+## Update log
+
+- update project time is: 2024-12-29 17:14:36
