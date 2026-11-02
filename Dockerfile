@@ -109,7 +109,7 @@ RUN apt-get update && apt-get -yq install --no-install-recommends \
     liblua5.2-0 \
     libopus0 \
     libpq5 \
-    libsndfile1 libflac12 libvorbis0a \
+    libsndfile1 libflac14 libvorbis0a \
     libshout3 libmpg123-0 libmp3lame0 libpng16-16t64 \
     && rm -rf /var/lib/apt/lists/*
 
