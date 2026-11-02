@@ -45,54 +45,14 @@ RUN cd /usr/src/libs/signalwire-c && PKG_CONFIG_PATH=/usr/lib/pkgconfig cmake . 
 RUN cd /usr/src/libs/libpng && ./configure && make && make install
 
 
-# ---- 应用 mod_av 的 FFmpeg 6.0+ 兼容补丁 ----
-RUN cd /usr/src/freeswitch && cat > /tmp/mod_av_ffmpeg6.patch <<'EOF'
-From 2e75bb8b2c7f70c5d16c9e3d14b1427f4eb80c9c Mon Sep 17 00:00:00 2001
-From: Korynkai <matt@qmxtech.com>
-Date: Thu, 17 Aug 2023 21:10:31 +0200
-Subject: [PATCH] mod_av: fix build with ffmpeg 6.0
-
-Upstream: https://github.com/signalwire/freeswitch/issues/2202
-
----
- src/mod/applications/mod_av/avformat.c | 2 ++
- src/mod/applications/mod_av/mod_av.h   | 1 +
- 2 files changed, 3 insertions(+)
-
-diff --git a/src/mod/applications/mod_av/avformat.c b/src/mod/applications/mod_av/avformat.c
-index 69475c169f..0a1662aed6 100644
---- a/src/mod/applications/mod_av/avformat.c
-+++ b/src/mod/applications/mod_av/avformat.c
-@@ -455,6 +455,7 @@ static int mod_avformat_alloc_output_context2(AVFormatContext **avctx, const cha
- 	}
- 
- 	s->oformat = oformat;
-+#if (LIBAVFORMAT_VERSION_MAJOR < LIBAVFORMAT_N)
- 	if (s->oformat->priv_data_size > 0) {
- 		s->priv_data = av_mallocz(s->oformat->priv_data_size);
- 		if (!s->priv_data) {
-@@ -468,6 +469,7 @@ static int mod_avformat_alloc_output_context2(AVFormatContext **avctx, const cha
- 	} else {
- 		s->priv_data = NULL;
- 	}
-+#endif
- 
- 	if (filename) {
- #if (LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58,7,100))
-diff --git a/src/mod/applications/mod_av/mod_av.h b/src/mod/applications/mod_av/mod_av.h
-index a89e6cb8f7..ef9bd48d73 100644
---- a/src/mod/applications/mod_av/mod_av.h
-+++ b/src/mod/applications/mod_av/mod_av.h
-@@ -42,6 +42,7 @@
- 
- #define LIBAVCODEC_V 59
- #define LIBAVFORMAT_V 59
-+#define LIBAVFORMAT_N 60
- #define LIBAVUTIL_V 57
- 
- struct mod_av_globals {
-EOF
-RUN cd /usr/src/freeswitch && git apply /tmp/mod_av_ffmpeg6.patch
+# ---- 直接修改 mod_av 源码以兼容 FFmpeg 6.0+ ----
+RUN cd /usr/src/freeswitch && \
+    # 1. 修改 avformat.c，绕过 FFmpeg 6.0 中已移除的 priv_data_size 字段
+    sed -i 's/s->oformat->priv_data_size > 0/0 > 0 \/* FFmpeg 6.0 compat *\//' src/mod/applications/mod_av/avformat.c && \
+    sed -i 's/av_mallocz(s->oformat->priv_data_size)/av_mallocz(0) \/* FFmpeg 6.0 compat *\//' src/mod/applications/mod_av/avformat.c && \
+    # 2. 修改 mod_av.h，新增 LIBAVFORMAT_N 宏定义（如果尚未存在）
+    grep -q 'LIBAVFORMAT_N' src/mod/applications/mod_av/mod_av.h || \
+    sed -i '/#define LIBAVFORMAT_V 59/a #define LIBAVFORMAT_N 60' src/mod/applications/mod_av/mod_av.h
 
 # Enable modules
 RUN sed -i 's|#formats/mod_shout|formats/mod_shout|' /usr/src/freeswitch/build/modules.conf.in && \
