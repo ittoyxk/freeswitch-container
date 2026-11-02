@@ -141,3 +141,10 @@ services:
       - ./conf/:/usr/local/freeswitch/conf/
       - ./log/:/usr/local/freeswitch/log/
 ```
+
+
+## 极致低延迟
+```xml
+<!-- 在拨号计划中，bridge 之前设置 -->
+<action application="set" data="bypass_media=true"/>
+```
