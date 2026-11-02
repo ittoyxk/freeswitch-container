@@ -1,9 +1,9 @@
-FROM debian:bullseye
+FROM debian:trixie
 MAINTAINER xiaokang
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -yq install git
 
-RUN git clone -b v1.10.12 --depth=1 https://github.com/signalwire/freeswitch /usr/src/freeswitch
+RUN git clone -b v1.11.3 --depth=1 https://github.com/signalwire/freeswitch /usr/src/freeswitch
 RUN git clone https://github.com/signalwire/libks /usr/src/libs/libks
 RUN git clone https://github.com/freeswitch/sofia-sip /usr/src/libs/sofia-sip
 RUN git clone https://github.com/freeswitch/spandsp /usr/src/libs/spandsp
