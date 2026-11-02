@@ -14,7 +14,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -yq install \
 # build
     build-essential cmake automake autoconf 'libtool-bin|libtool' pkg-config \
 # general
-    libssl-dev zlib1g-dev libdb-dev unixodbc-dev libncurses5-dev libexpat1-dev libgdbm-dev bison erlang-dev libtpl-dev libtiff5-dev uuid-dev \
+    libssl-dev zlib1g-dev libdb-dev unixodbc-dev libncurses-dev libexpat1-dev libgdbm-dev bison erlang-dev libtpl-dev libtiff-dev uuid-dev \
 # core
     libpcre2-dev libedit-dev libsqlite3-dev libcurl4-openssl-dev nasm \
 # core codecs
@@ -24,7 +24,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -yq install \
 # mod_python3
     python3-dev \
 # mod_av
-    libavformat-dev libswscale-dev libavresample-dev \
+    libavformat-dev libswscale-dev libswresample-dev \
+# mod_vpx（VP8/VP9，WebRTC 视频）
+    libvpx-dev libyuv-dev \
 # mod_lua
     liblua5.2-dev \
 # mod_opus
@@ -42,6 +44,42 @@ RUN cd /usr/src/libs/spandsp && git checkout 0d2e6ac && ./bootstrap.sh && ./conf
 RUN cd /usr/src/libs/signalwire-c && PKG_CONFIG_PATH=/usr/lib/pkgconfig cmake . -DCMAKE_INSTALL_PREFIX=/usr && make install
 RUN cd /usr/src/libs/libpng && ./configure && make && make install
 
+
+# ---- 应用 mod_av 的 FFmpeg 6.0+ 兼容补丁 ----
+# 修复 FFmpeg 6.0 移除 AVOutputFormat->priv_data_size 导致的编译错误
+# 补丁来源：FreeSWITCH Issue #2202 / Buildroot 0002-mod_av-fix-build-with-ffmpeg-6.0.patch
+RUN cd /usr/src/freeswitch && cat > /tmp/mod_av_ffmpeg6.patch <<'EOF'
+--- a/src/mod/applications/mod_av/avformat.c
++++ b/src/mod/applications/mod_av/avformat.c
+@@ -455,8 +455,10 @@
+ 	}
+ 	s->oformat = oformat;
++#if (LIBAVFORMAT_VERSION_MAJOR < 60)
+ 	if (s->oformat->priv_data_size > 0) {
+ 		s->priv_data = av_mallocz(s->oformat->priv_data_size);
+ 		if (!s->priv_data) {
+ 			goto nomem;
+ 		}
+@@ -468,6 +470,7 @@
+ 	} else {
+ 		s->priv_data = NULL;
+ 	}
++#endif
+ 
+ 	if (filename) {
+ #if (LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58,7,100))
+--- a/src/mod/applications/mod_av/mod_av.h
++++ b/src/mod/applications/mod_av/mod_av.h
+@@ -42,6 +42,7 @@
+ #define LIBAVCODEC_V 59
+ #define LIBAVFORMAT_V 59
++#define LIBAVFORMAT_N 60
+ #define LIBAVUTIL_V 57
+ 
+ struct mod_av_globals {
+EOF
+RUN cd /usr/src/freeswitch && git apply /tmp/mod_av_ffmpeg6.patch
+
 # Enable modules
 RUN sed -i 's|#formats/mod_shout|formats/mod_shout|' /usr/src/freeswitch/build/modules.conf.in && \
     sed -i 's|#applications/mod_abstraction|applications/mod_abstraction|' /usr/src/freeswitch/build/modules.conf.in && \
@@ -55,9 +93,9 @@ RUN sed -i 's|#formats/mod_shout|formats/mod_shout|' /usr/src/freeswitch/build/m
     sed -i 's|#event_handlers/mod_format_cdr|event_handlers/mod_format_cdr|' /usr/src/freeswitch/build/modules.conf.in && \
     sed -i 's|#event_handlers/mod_json_cdr|event_handlers/mod_json_cdr|' /usr/src/freeswitch/build/modules.conf.in
 
-RUN PKG_CONFIG_PATH=/usr/lib/pkgconfig
+#RUN PKG_CONFIG_PATH=/usr/lib/pkgconfig
 RUN cd /usr/src/freeswitch && ./bootstrap.sh -j
-RUN cd /usr/src/freeswitch && ./configure
+RUN cd /usr/src/freeswitch && PKG_CONFIG_PATH=/usr/lib/pkgconfig ./configure
 RUN cd /usr/src/freeswitch && make -j`nproc` && make install
 
 # Cleanup the image
