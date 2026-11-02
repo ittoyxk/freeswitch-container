@@ -46,21 +46,32 @@ RUN cd /usr/src/libs/libpng && ./configure && make && make install
 
 
 # ---- 应用 mod_av 的 FFmpeg 6.0+ 兼容补丁 ----
-# 修复 FFmpeg 6.0 移除 AVOutputFormat->priv_data_size 导致的编译错误
-# 补丁来源：FreeSWITCH Issue #2202 / Buildroot 0002-mod_av-fix-build-with-ffmpeg-6.0.patch
 RUN cd /usr/src/freeswitch && cat > /tmp/mod_av_ffmpeg6.patch <<'EOF'
+From 2e75bb8b2c7f70c5d16c9e3d14b1427f4eb80c9c Mon Sep 17 00:00:00 2001
+From: Korynkai <matt@qmxtech.com>
+Date: Thu, 17 Aug 2023 21:10:31 +0200
+Subject: [PATCH] mod_av: fix build with ffmpeg 6.0
+
+Upstream: https://github.com/signalwire/freeswitch/issues/2202
+
+---
+ src/mod/applications/mod_av/avformat.c | 2 ++
+ src/mod/applications/mod_av/mod_av.h   | 1 +
+ 2 files changed, 3 insertions(+)
+
+diff --git a/src/mod/applications/mod_av/avformat.c b/src/mod/applications/mod_av/avformat.c
+index 69475c169f..0a1662aed6 100644
 --- a/src/mod/applications/mod_av/avformat.c
 +++ b/src/mod/applications/mod_av/avformat.c
-@@ -455,8 +455,10 @@
+@@ -455,6 +455,7 @@ static int mod_avformat_alloc_output_context2(AVFormatContext **avctx, const cha
  	}
+ 
  	s->oformat = oformat;
-+#if (LIBAVFORMAT_VERSION_MAJOR < 60)
++#if (LIBAVFORMAT_VERSION_MAJOR < LIBAVFORMAT_N)
  	if (s->oformat->priv_data_size > 0) {
  		s->priv_data = av_mallocz(s->oformat->priv_data_size);
  		if (!s->priv_data) {
- 			goto nomem;
- 		}
-@@ -468,6 +470,7 @@
+@@ -468,6 +469,7 @@ static int mod_avformat_alloc_output_context2(AVFormatContext **avctx, const cha
  	} else {
  		s->priv_data = NULL;
  	}
@@ -68,9 +79,12 @@ RUN cd /usr/src/freeswitch && cat > /tmp/mod_av_ffmpeg6.patch <<'EOF'
  
  	if (filename) {
  #if (LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58,7,100))
+diff --git a/src/mod/applications/mod_av/mod_av.h b/src/mod/applications/mod_av/mod_av.h
+index a89e6cb8f7..ef9bd48d73 100644
 --- a/src/mod/applications/mod_av/mod_av.h
 +++ b/src/mod/applications/mod_av/mod_av.h
 @@ -42,6 +42,7 @@
+ 
  #define LIBAVCODEC_V 59
  #define LIBAVFORMAT_V 59
 +#define LIBAVFORMAT_N 60
