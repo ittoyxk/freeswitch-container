@@ -5,8 +5,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -yq install git
 
 RUN git clone -b v1.11.3 --depth=1 https://github.com/signalwire/freeswitch /usr/src/freeswitch
 RUN git clone https://github.com/signalwire/libks /usr/src/libs/libks
-RUN git clone https://github.com/freeswitch/sofia-sip /usr/src/libs/sofia-sip
-RUN git clone https://github.com/freeswitch/spandsp /usr/src/libs/spandsp
+RUN git clone -b v1.13.18 --depth=1 https://github.com/freeswitch/sofia-sip /usr/src/libs/sofia-sip
+RUN git clone -b v3.1.1 --depth=1 https://github.com/freeswitch/spandsp /usr/src/libs/spandsp
 RUN git clone https://github.com/signalwire/signalwire-c /usr/src/libs/signalwire-c
 RUN git clone --depth=1 --branch v1.6.51 https://github.com/pnggroup/libpng.git /usr/src/libs/libpng
 
@@ -67,7 +67,7 @@ RUN sed -i 's|#formats/mod_shout|formats/mod_shout|' /usr/src/freeswitch/build/m
     sed -i 's|#event_handlers/mod_format_cdr|event_handlers/mod_format_cdr|' /usr/src/freeswitch/build/modules.conf.in && \
     sed -i 's|#event_handlers/mod_json_cdr|event_handlers/mod_json_cdr|' /usr/src/freeswitch/build/modules.conf.in
 
-#RUN PKG_CONFIG_PATH=/usr/lib/pkgconfig
+RUN PKG_CONFIG_PATH=/usr/lib/pkgconfig
 RUN cd /usr/src/freeswitch && ./bootstrap.sh -j
 RUN cd /usr/src/freeswitch && PKG_CONFIG_PATH=/usr/lib/pkgconfig ./configure
 RUN cd /usr/src/freeswitch && make -j`nproc` && make install
